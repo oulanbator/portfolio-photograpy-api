@@ -1,10 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from api.config import Config
+from flask_cors import CORS
 
-app = Flask(__name__, static_folder="../public", static_url_path="/")
+# app = Flask(__name__, static_folder="../images", static_url_path="/")
+app = Flask(__name__, static_folder="../images")
 # app = Flask(__name__)
 app.config.from_object(Config)
+CORS(app)
 
 db = SQLAlchemy(app)
 

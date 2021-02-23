@@ -19,6 +19,13 @@ class Image(db.Model):
         for gallery in self.galleries:
             galleries.append(gallery.title)
             i += 1
+        dbGalleries = Gallery.query.all()
+        for gallery in dbGalleries:
+            if self.source == gallery.firstImage:
+                galleryName = gallery.title
+                if galleryName not in galleries:
+                    galleries.append(galleryName)
+                    i += 1
         if i > 0:
             return galleries
         else:
@@ -29,7 +36,7 @@ class Gallery(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     firstImage = db.Column(db.String, unique=True, nullable=False)
     title = db.Column(db.String, unique=True, nullable=False)
-    description = db.Column(db.String)
+    description = db.Column(db.String, default="")
     images = db.relationship('Image', secondary=galleryImages, lazy='dynamic',
         backref=db.backref('galleries', lazy='dynamic'))
     
