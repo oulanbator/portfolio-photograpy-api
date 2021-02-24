@@ -10,6 +10,7 @@ This Flask app serves JSON answers for a full featured portfolio website.
 # Heroku Demo
 The API is currently running on Heroku. You can check it at the different endpoints, for example :
 > https://portfolio-photographie-api.herokuapp.com/api/medias
+> 
 > https://portfolio-photographie-api.herokuapp.com/api/galleries
 
 Check the api/routes.py for a better view on the different endpoints
