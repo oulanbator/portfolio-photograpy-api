@@ -1,5 +1,6 @@
 import time
 from flask import request, url_for
+from flask_cors import cross_origin
 import json
 from PIL import Image as PilImage
 import secrets, os
@@ -25,6 +26,7 @@ def get_gallery_sources(galleryName):
 # ROUTES 
 
 @app.route('/api/createGallery')
+@cross_origin()
 def create_gallery():
     title = request.args.get('title')
     firstImage = request.args.get('firstImage')
@@ -43,6 +45,7 @@ def create_gallery():
         return json.dumps(responseDict)
 
 @app.route('/api/deleteGallery/<name>')
+@cross_origin()
 def delete_gallery(name):
     targetGallery = Gallery.query.filter_by(title=name).first()
     db.session.delete(targetGallery)
@@ -55,6 +58,7 @@ def delete_gallery(name):
     return json.dumps(responseDict)
 
 @app.route('/api/saveGallery', methods=['GET', 'POST'])
+@cross_origin()
 def save_gallery():
     if request.method == "POST":
         print(request.form)
@@ -103,6 +107,7 @@ def save_gallery():
     return json.dumps({"status": "success"})
 
 @app.route('/api/galleries')
+@cross_origin()
 def get_galleries():
     db_galleries = Gallery.query.all()
     dbSources = []
@@ -115,6 +120,7 @@ def get_galleries():
     return sources_js
 
 @app.route('/api/galleryInfo/<name>')
+@cross_origin()
 def get_gallery_info(name):
     # Get Gallery object
     dbGallery = Gallery.query.filter_by(title=name).first()
@@ -127,6 +133,7 @@ def get_gallery_info(name):
     return responseDict
 
 @app.route('/api/gallery/<name>')
+@cross_origin()
 def get_gallery(name):
     print("GALLERY NAME : " + name)
     # Get Gallery object
@@ -142,6 +149,7 @@ def get_gallery(name):
     return sources_js
 
 @app.route('/api/medias')
+@cross_origin()
 def get_medias():
     db_medias = Image.query.all()
     dbSources = []
@@ -154,6 +162,7 @@ def get_medias():
     return sources_js
 
 @app.route('/api/medias/delete/<filename>')
+@cross_origin()
 def delete_media(filename):
     # Delete image from database
     media = Image.query.filter_by(source=filename).first()
@@ -175,6 +184,7 @@ def delete_media(filename):
         return json.dumps({"status": "success"})
 
 @app.route('/api/uploadFile', methods=['GET', 'POST'])
+@cross_origin()
 def uploadFile():
     if request.method == "POST":
         for i in request.files:

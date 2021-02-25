@@ -7,7 +7,7 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder="../images")
 # app = Flask(__name__)
 app.config.from_object(Config)
-CORS(app)
+cors = CORS(app)
 
 db = SQLAlchemy(app)
 
