@@ -24,25 +24,21 @@ def get_gallery_sources(galleryName):
     return dbSources
 
 # ROUTES 
-
 @app.route('/api/createGallery')
 @cross_origin()
 def create_gallery():
     title = request.args.get('title')
     firstImage = request.args.get('firstImage')
     gallery_exists = Gallery.query.filter_by(title=title).first()
+    # If gallery name already taken, abort
     if gallery_exists:
         return json.dumps({"status": "aborted"})
     else:
+        # Else, create new gallery
         newGallery = Gallery(title=title, firstImage=firstImage)
         db.session.add(newGallery)
         db.session.commit()
-        galleries = get_galleries()
-        responseDict = {
-            "status": "success",
-            "galleries": galleries
-        }
-        return json.dumps(responseDict)
+        return json.dumps({"status": "success"})
 
 @app.route('/api/deleteGallery/<name>')
 @cross_origin()
