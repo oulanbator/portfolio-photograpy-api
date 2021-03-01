@@ -1,4 +1,5 @@
-from api import db
+from api import db, login_manager
+from flask_login import UserMixin
 
 # MODELS
 
@@ -34,7 +35,7 @@ class Image(db.Model):
 class Gallery(db.Model):
     __tablename__ = 'gallery'
     id = db.Column(db.Integer, primary_key=True)
-    firstImage = db.Column(db.String, unique=True, nullable=False)
+    firstImage = db.Column(db.String, nullable=False, default="default.png")
     title = db.Column(db.String, unique=True, nullable=False)
     description = db.Column(db.String, default="")
     images = db.relationship('Image', secondary=galleryImages, lazy='dynamic',
@@ -51,3 +52,15 @@ class Gallery(db.Model):
     def is_used(self, image):
         return self.images.filter(
             galleryImages.c.imageId == image.id).count() > 0
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class User(db.Model, UserMixin):
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
