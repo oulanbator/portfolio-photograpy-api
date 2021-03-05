@@ -1,6 +1,7 @@
 # Utilities
 import time, json, secrets, os
 from PIL import Image as PilImage
+import cv2
 # Flask imports
 from flask import request, url_for
 from flask_cors import cross_origin
@@ -64,7 +65,6 @@ def delete_gallery(name):
 @login_required
 def save_gallery():
     if request.method == "POST":
-        print(request.form)
         # Get form informations back from the posted form
         originalTitle = request.form.get('originalTitle')
         title = request.form.get('title')
@@ -153,7 +153,6 @@ def get_gallery_info(name):
 @app.route('/api/gallery/<name>')
 @cross_origin()
 def get_gallery(name):
-    print("GALLERY NAME : " + name)
     # Look for gallery in database
     dbGallery = Gallery.query.filter_by(title=name).first()
     # Build list for image sources
@@ -191,7 +190,7 @@ def get_medias():
 @cross_origin()
 @login_required
 def delete_media(filename):
-    # Delete image from database
+    # Look for image in database
     media = Image.query.filter_by(source=filename).first()
     # If media is used in one or more galleries
     if media.is_used():
@@ -210,6 +209,21 @@ def delete_media(filename):
         os_path = os.path.join("images/", filename)
         os.remove(os_path)
         return json.dumps({"status": "success"})
+
+@app.route('/api/medias/rotate/<filename>')
+@cross_origin()
+@login_required
+def rotate_media(filename):
+    # Look for image in database
+    db_image = Image.query.filter_by(source=filename).first()
+    if db_image:
+        # Build image path
+        os_path = os.path.join("images/", filename)
+        src = cv2.imread(os_path)
+        # Rotation and save on same path
+        image = cv2.rotate(src, cv2.cv2.ROTATE_90_CLOCKWISE)
+        cv2.imwrite(os_path, image)
+    return json.dumps({"status": "success", "source": filename})
 
 @app.route('/api/uploadFile', methods=['GET', 'POST'])
 @cross_origin()
@@ -232,7 +246,6 @@ def uploadFile():
             img.thumbnail(output_size)
             # Save image in filesystem
             img.save(picture_path)
-            print("file saved !")
             # add to database
             db_image = Image(source=picture_filename)
             db.session.add(db_image)
